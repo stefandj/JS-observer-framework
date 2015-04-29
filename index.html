@@ -7,7 +7,10 @@
 <div id='buttons-parent'></div>
 <section hidden id="templates">
 	<div id="template-button">
-		<button type="button" class="my-button">__clickme__</button>
+	<div class="moja-klasa">
+			<button type="button" class="my-button">__clickme__</button>
+			<button type="submit" class="btn btn-block btn-primary" data-myparam=''>Bootstrap Btn</button>
+	</div>
 	</div>
 </section>
 <section id="scripts">
@@ -15,9 +18,13 @@
 	<script type="text/javascript" src="modules/module1.js"></script>
 	<script type="text/javascript" src="modules/module2.js"></script>
 <script type="text/javascript">
+var tmp = {};
 	window.onload = function () {
-		//za potrebe testiranja
-	    app.init();
+		var app = new App.app();
+		app.register_module('module1');
+		app.register_module('module2');
+		app.init();
+		
 	    app.notify({ type: 'test' });
 	    app.notify({ type: 'addButton', data: 'klik1' });
 	    app.notify({ type: 'addButton', data: 'klik2' });
@@ -30,10 +37,7 @@
 	    setTimeout(function(){
 	    	app.notify({type:'removeButton',data:'2'});
 	    },4000);
-	    setTimeout(function(){
-	    	app.notify({type:'removeButton',data:document.getElementById('buttons-parent').children[0]});
-	    },6000);
-//*/
+
 	}
 </script>
 </section>

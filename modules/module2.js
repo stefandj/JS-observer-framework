@@ -1,17 +1,18 @@
-app.modules.module2 = {
-	data:{},
-	cache:{},
-	handlers: {},
-	init: function(){
-		app.modules.module2.data.repeater = new app.repeater({template:'template-button', parent:'buttons-parent'});
+App.modules.module2 = function(App){
+	var app = App;
+	var data={};
+	var cache={};
+	var handlers= {};
+	this.init= function(){
+		data.repeater = new app.repeater({template:'template-button', parent:'buttons-parent'});
 		app.notify({type:'module_ready',data:'module2'});
-	},
-	functions:{
+	};
+	this.functions={
 		addButton: function(event){
-			app.modules.module2.data.repeater.addData({clickme:event.data, data_nesto:'nesto'});
+			data.repeater.addData({clickme:event.data, 'data-myparam':'my value'});
 		},
 		removeButton: function(event){
-			app.modules.module2.data.repeater.removeData(event.data);
+			data.repeater.removeData(event.data);
 		}
 	}
 };
