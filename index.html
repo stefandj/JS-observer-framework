@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mini Framework</title>
+</head>
+<body>
+<div id='buttons-parent'></div>
+<section hidden id="templates">
+	<div id="template-button">
+		<button type="button" class="my-button">__clickme__</button>
+	</div>
+</section>
+<section id="scripts">
+	<script type="text/javascript" src="app.js"></script>
+	<script type="text/javascript" src="modules/module1.js"></script>
+	<script type="text/javascript" src="modules/module2.js"></script>
+<script type="text/javascript">
+	window.onload = function () {
+		//za potrebe testiranja
+	    app.init();
+	    app.notify({ type: 'test' });
+	    app.notify({ type: 'addButton', data: 'klik1' });
+	    app.notify({ type: 'addButton', data: 'klik2' });
+	    app.notify({ type: 'addButton', data: 'klik3' });
+	    app.notify({ type: 'addButton', data: 'klik4' });
+	    setTimeout(function(){
+	    	app.notify({type:'removeButton',data:0});
+	    },2000);
+	    //*
+	    setTimeout(function(){
+	    	app.notify({type:'removeButton',data:'2'});
+	    },4000);
+	    setTimeout(function(){
+	    	app.notify({type:'removeButton',data:document.getElementById('buttons-parent').children[0]});
+	    },6000);
+//*/
+	}
+</script>
+</section>
+</body>
+</html>
