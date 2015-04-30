@@ -9,7 +9,7 @@ App.modules.module1 = function(App){
 	};
 	this.functions = {
 		test: function(event){
-			app.log('m1 tmp');
+			app.log('test function called');
 		}
 	}
 };

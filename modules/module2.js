@@ -9,7 +9,7 @@ App.modules.module2 = function(App){
 	};
 	this.functions={
 		addButton: function(event){
-			data.repeater.addData({clickme:event.data, 'data-myparam':'my value'});
+			data.repeater.addData({clickme:event.data, 'data-myparam':'my-value'});
 		},
 		removeButton: function(event){
 			data.repeater.removeData(event.data);
