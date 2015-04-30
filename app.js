@@ -11,7 +11,8 @@ var App = {
             ready: false,
             repeater_id: 0,
             replace_delimiter: event.replace_delimiter || '__',
-            name: event.name || 'myApp'
+            name: event.name || 'myApp',
+            initialized: false
         };
         var helpers = {
             prototypes_init: function () {
@@ -116,6 +117,10 @@ var App = {
         };
 
         this.init = function () {
+        	if(config.initialized==true){
+        		helpers.error('Error: ' + config.name + ' already initialized');
+        	};
+        	config.initialized=true;
             helpers.prototypes_init();
 
             var local_modules = [];

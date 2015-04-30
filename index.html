@@ -18,25 +18,21 @@
 	<script type="text/javascript" src="modules/module1.js"></script>
 	<script type="text/javascript" src="modules/module2.js"></script>
 <script type="text/javascript">
-var tmp = {};
+var app = {};
 	window.onload = function () {
-		var app = new App.app();
+		app = new App.app();
 		app.register_module('module1');
 		app.register_module('module2');
 		app.init();
 		
 	    app.notify({ type: 'test' });
-	    app.notify({ type: 'addButton', data: 'klik1' });
-	    app.notify({ type: 'addButton', data: 'klik2' });
-	    app.notify({ type: 'addButton', data: 'klik3' });
-	    app.notify({ type: 'addButton', data: 'klik4' });
+	    app.notify({ type: 'addButton', data: 'my-button-1' });
+	    app.notify({ type: 'addButton', data: 'my-button-2' });
+	    app.notify({ type: 'addButton', data: 'my-button-3' });
+	    app.notify({ type: 'addButton', data: 'my-button-4' });
 	    setTimeout(function(){
 	    	app.notify({type:'removeButton',data:0});
 	    },2000);
-	    //*
-	    setTimeout(function(){
-	    	app.notify({type:'removeButton',data:'2'});
-	    },4000);
 
 	}
 </script>
