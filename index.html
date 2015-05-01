@@ -284,15 +284,6 @@ App.modules.scores&nbsp;=&nbsp;function(App){
 					app.register_module('scores');
 					app.register_module('steps');
 					app.init();
-					
-				    app.notify({ type: 'test' });
-				    app.notify({ type: 'addButton', data: 'my-button-2' });
-				    app.notify({ type: 'addButton', data: 'my-button-3' });
-				    app.notify({ type: 'addButton', data: 'my-button-4' });
-				    setTimeout(function(){
-				    	app.notify({type:'removeButton',data:0});
-				    },2000);
-
 				}
 			</script>
 		</section>
