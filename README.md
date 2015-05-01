@@ -1,5 +1,8 @@
 # JS-observer-framework
 
+####Example
+[A quick tutorial with a demo](http://pavlovicdzfilip.github.io/JS-observer-framework/)
+
 ####About this framework:
 It is based on observer pattern.<br />
 Very usable for single page applications.<br />
