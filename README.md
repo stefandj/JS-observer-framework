@@ -50,9 +50,11 @@ Take a look at [module2 initialization](https://github.com/PavlovicDzFilip/JS-ob
 `repeater.addData(event);` will create a new element and put it to the end of parent element automatically. <br/>
 Repeater will add `data-app` and `data-repeater-element-id` parameters to the element added.<br/>
 Any property in event will be added to the element except those whose value was inserted in the html itself.<br/>
+
 To insert some html into element, some conditions must be met:
+
 1. Element has no children
-2. Element html needs to be in proper format, default: `Hello, my name is __name__`. `__` is configurable with application config
+2. Element html needs to be in proper format, default : `Hello, my name is __name__`, where `__` is configurable with application config
 3. Event must contain the property, `repeater.addData({name: 'Filip'});` which will result in `Hello, my name is Filip`
 
 When calling addData function, parameters should not contain:
