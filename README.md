@@ -16,7 +16,7 @@ Both functions get called, and you check if you need to do anything in that modu
 2. Create modules and put them in modules folder
 3. Include your modules in the html file `<script type="text/javascript" src="modules\app.js"></script>`
 4. Create new app instance `var app = new App.app();`
-5. Register modules with the app `app.register_module('my_module`);
+5. Register modules with the app `app.register_module('my_module');`
 6. Initialize app `app.init();`
 7. App is ready to use
 
@@ -31,7 +31,7 @@ Both functions get called, and you check if you need to do anything in that modu
 
 ####Application is not initialized
 1. Your modules need to contain a function `init` which will be called on `app.init()`
-2. When your module is initialized, it must notify the app with `app.notify({type: 'module_ready',data: 'my_module'})`
+2. When your module is initialized, it must notify the app with `app.notify({type: 'module_ready',data:{module: 'my_module'}})`
 
 ####Application config
 1. Application config is an object passed when initializing the app
