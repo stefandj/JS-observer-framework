@@ -1,0 +1,25 @@
+.container{
+	margin-top: 2em;
+}
+pre{
+	background-color: white;
+}
+.question{
+	padding: 2em;
+    border: 1px solid black;
+    border-radius: 6px;
+    background-color: white;
+}
+.question-text{
+	text-align: center;
+}
+.answer{
+	min-width: 49%;
+}
+#quiz-score{
+	text-align: right;
+}
+#quiz{
+	background-color: #EDFFFF;
+	display: none;
+}

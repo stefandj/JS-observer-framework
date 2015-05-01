@@ -1,41 +1,300 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Mini Framework</title>
-</head>
-<body>
-<div id='buttons-parent'></div>
-<section hidden id="templates">
-	<div id="template-button">
-	<div class="moja-klasa">
-			<button type="button" class="my-button">__clickme__</button>
-			<button type="submit" class="btn btn-block btn-primary" data-myparam=''>Bootstrap Btn</button>
-	</div>
-	</div>
-</section>
-<section id="scripts">
-	<script type="text/javascript" src="app.js"></script>
-	<script type="text/javascript" src="modules/module1.js"></script>
-	<script type="text/javascript" src="modules/module2.js"></script>
-<script type="text/javascript">
-var app = {};
-	window.onload = function () {
-		app = new App.app();
-		app.register_module('module1');
-		app.register_module('module2');
-		app.init();
-		
-	    app.notify({ type: 'test' });
-	    app.notify({ type: 'addButton', data: 'my-button-1' });
-	    app.notify({ type: 'addButton', data: 'my-button-2' });
-	    app.notify({ type: 'addButton', data: 'my-button-3' });
-	    app.notify({ type: 'addButton', data: 'my-button-4' });
-	    setTimeout(function(){
-	    	app.notify({type:'removeButton',data:0});
-	    },2000);
-
+	<head>
+		<title>Mini Framework</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="css/styles.css">
+	</head>
+	<body>
+		<div class='container'>
+		<div class="well" data-step='1'>
+			<div><b>Step 1:</b> Description:</div>
+				<div><b>The Goal</b> is to create a simple quiz with highscores.</div>
+				<hr/>
+				<span>There are three modules:</span>
+					<ul>
+					<li>Questions module - displays the question</li>
+					<li>Answers module - checks the answer</li>
+					<li>Scores module - displays the score</li>
+					</ul>
+					<span>First we need to include the scripts into html</span>
+					<pre class='prettyprint lang-html'>&lt;script&nbsp;type="text/javascript"&nbsp;src="js/app.js"&gt;&lt;/script&gt;<br/>&lt;script&nbsp;type="text/javascript"&nbsp;src="js/modules/questions.js"&gt;&lt;/script&gt;<br/>&lt;script&nbsp;type="text/javascript"&nbsp;src="js/modules/answers.js"&gt;&lt;/script&gt;<br/>&lt;script&nbsp;type="text/javascript"&nbsp;src="js/modules/scores.js"&gt;&lt;/script&gt;
+</pre>
+			<button type="button" class="next-step btn btn-primary">Next step</button>
+		</div>
+			<div class="well" data-step='2'>
+				<div><b>Step 2:</b></div>
+				<div>Now we need to define modules</div>
+				<div>For now let's just copy the module template into the files and change the names</div>
+				<div><b>Don't forget to change the name in the initialization</b></div>
+				<span>Use this code as a template</span>
+				<pre class='prettyprint lang-js'>
+App.modules.my_module = function(App){
+	var app = App;
+	var data={};
+	var cache={};
+	var handlers={
+	};
+	this.init= function(){
+		app.notify({type:'module_ready', data:{module:'my_module'})};
+	};
+	this.functions = {
 	}
-</script>
-</section>
-</body>
+};
+</pre><button type="button" class="prev-step btn btn-primary">Previous step</button>
+
+				<button type="button" class="next-step btn btn-primary">Next step</button>
+			</div>
+			<div class="well" data-step='3'>
+				<div><b>Step 3:</b></div>
+				<div>The idea is next:</div>
+				<div>Questions module will contain data with questions and answers.</div>
+				<div>It will also contain a repeater which will create html elements for us.</div>
+				<div>When html element is created, it will be automatically added to the parent element which we specify when creating the repeater.</div>
+				<div>That html element will also be returned to us, and we will pass it on to answers module to hook up the handlers</div>
+				<div>Normally, for this would be required only one module, but for this short tutorial, we are creating a few very simple modules</div>
+				<div>Once the answer is submitted, we will notify the question module to display a new question and we will notify the scores module to update the score</div>
+				<div>We will always use the first answer as a correct one for this tutorial</div>
+				<div>Lets use this template for the modules</div>
+				<pre class='prettyprint lang-html'>
+&lt;div&nbsp;id='question-template'&gt;
+ &lt;div&nbsp;class='question'&gt;
+  &nbsp;&lt;div&nbsp;class='question-text'&gt;__question_text__&lt;/div&gt;
+  &nbsp;&lt;hr&nbsp;/&gt;
+  &nbsp;&lt;button&nbsp;class='answer&nbsp;btn&nbsp;btn-default'&nbsp;data-correct='true'&gt;__answer1__&lt;/button&gt;
+  &nbsp;&lt;button&nbsp;class='answer&nbsp;btn&nbsp;btn-default'&gt;__answer2__&lt;/button&gt;
+  &nbsp;&lt;button&nbsp;class='answer&nbsp;btn&nbsp;btn-default'&gt;__answer3__&lt;/button&gt;
+  &nbsp;&lt;button&nbsp;class='answer&nbsp;btn&nbsp;btn-default'&gt;__answer4__&lt;/button&gt;
+ &nbsp;&lt;/div&gt;
+&nbsp;&lt;/div&gt;
+</pre>
+<div class="alert alert-info"><b>Notice:</b> Repeater will change those values when creating new element</div>
+				<button type="button" class="prev-step btn btn-primary">Previous step</button>
+<button type="button" class="next-step btn btn-primary">Next step</button>
+			</div>
+			<div class="well" data-step='4'>
+				<div><b>Step 4:</b></div>
+				<div>Lets take a look at the questions module.</div>
+				<div>The code here is very simple</div>
+				<div>display_question function will be called when we notify the app with type 'display_question'</div>
+				<div>This function gets one question, uses the repeater to create html and passes on the element to the answers module.</div>
+				<div>Data.questions are all the questions we have here.</div>
+				<div>Init function initializes the module and notifies the app it is ready</div>
+				<div>App is unable to do anything while all modules are not initialized</div>
+				<pre class='prettyprint lang-js'>
+App.modules.questions&nbsp;=&nbsp;function(App){
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;app&nbsp;=&nbsp;App;
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;data={
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;questions:[
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;question:'What&nbsp;color&nbsp;was&nbsp;the&nbsp;arrow&nbsp;which&nbsp;killed&nbsp;Smaug&nbsp;in&nbsp;The&nbsp;Hobbit?',
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answers:['Black','Green','White','Red']
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;question:'Luke,&nbsp;I&nbsp;am&nbsp;your&nbsp;____.',
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answers:['Father','Uncle','Roommate','Son']
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;question:'Commander&nbsp;Cody,&nbsp;the&nbsp;time&nbsp;has&nbsp;come.&nbsp;Execute&nbsp;Order&nbsp;__.',
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answers:['66','69','72','84']
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;cache={};
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;handlers={
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_quiz_btn:function(event){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.remove();
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;document.getElementById('quiz').style.display='inherit';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app.notify({type:'display_question'});
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;
+ &nbsp;&nbsp;&nbsp;&nbsp;this.init=&nbsp;function(){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//lets&nbsp;create&nbsp;a&nbsp;repeater
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.repeater&nbsp;=&nbsp;new&nbsp;app.repeater({template:'question-template',&nbsp;parent:&nbsp;'quiz-question'});
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;quiz_question&nbsp;=&nbsp;document.getElementById('quiz-question');
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.parent&nbsp;=&nbsp;quiz_question;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app.notify({type:'module_ready',&nbsp;data:{module:'questions'}});
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;start_quiz_btn&nbsp;=&nbsp;document.getElementById('start-quiz');
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;start_quiz_btn.addEventListener('click',handlers.start_quiz_btn);
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;this.functions&nbsp;=&nbsp;{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;display_question:&nbsp;function(event){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(data.questions.length==0){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;container&nbsp;=&nbsp;document.getElementById('quiz-question');
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(var&nbsp;i=container.children.length-1;i&gt;=0;i--){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;container.children[i].remove();
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;notification&nbsp;=&nbsp;document.createElement('div');
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification.className&nbsp;=&nbsp;'alert&nbsp;alert-success';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;notification.innerText&nbsp;=&nbsp;'You&nbsp;have&nbsp;completed&nbsp;this&nbsp;quiz.&nbsp;Congratulations.';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;container.appendChild(notification);
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;question&nbsp;=&nbsp;data.questions.pop();
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//prepare&nbsp;the&nbsp;data&nbsp;to&nbsp;be&nbsp;the&nbsp;same&nbsp;format&nbsp;as&nbsp;our&nbsp;template
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;parsedQuestion&nbsp;=&nbsp;{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;question_text:question.question,
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer1:question.answers[0],
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer2:question.answers[1],
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer3:question.answers[2],
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer4:question.answers[3],
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;element&nbsp;=&nbsp;data.repeater.addData(parsedQuestion);
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//send&nbsp;the&nbsp;element&nbsp;to&nbsp;the&nbsp;answers&nbsp;module&nbsp;to&nbsp;hook&nbsp;up&nbsp;the&nbsp;handlers
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app.notify({type:'attach_answer_hook',data:{element:element}});
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//remove&nbsp;first&nbsp;child&nbsp;from&nbsp;the&nbsp;quiz-question,&nbsp;we&nbsp;want&nbsp;to&nbsp;display&nbsp;only&nbsp;one&nbsp;question
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(data.parent.children.length&gt;1){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.parent.children[0].remove();
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;}
+ };</pre><button type="button" class="prev-step btn btn-primary">Previous step</button>
+
+				<button type="button" class="next-step btn btn-primary">Next step</button>
+			</div>
+			<div class="well" data-step='5'>
+				<div><b>Step 5:</b></div>
+				<div>Our next module is answers module.</div>
+				<div>Handler answer_click is a function called when a button is pressed (question is answered).</div>
+				<div>After three seconds, this module will ask questions module for the next question.</div>
+				<div>If answer is correct, scores module will also be notified, to update the score in the upper right corner.</div>
+				<div>Function attach_answer_hook is used to attack handlers for the buttons.</div>
+				<pre class='prettyprint lang-html'>
+App.modules.answers&nbsp;=&nbsp;function(App){
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;app&nbsp;=&nbsp;App;
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;data={};
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;cache={};
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;handlers=&nbsp;{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer_click:&nbsp;function(event){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;elem&nbsp;=&nbsp;this;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//replace&nbsp;all&nbsp;buttons&nbsp;first,&nbsp;to&nbsp;disable&nbsp;more&nbsp;clicks
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;buttons&nbsp;=&nbsp;document.querySelectorAll('.answer');
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(var&nbsp;i=buttons.length-1;i&gt;=0;i--){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;btn&nbsp;=&nbsp;buttons[i].cloneNode(true);
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(elem==buttons[i]){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elem=btn;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;buttons[i].parentNode.replaceChild(btn,buttons[i]);
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//if&nbsp;answer&nbsp;is&nbsp;correct,&nbsp;add&nbsp;10&nbsp;points
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;msg;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(typeof(elem.attributes['data-correct'])!==&nbsp;'undefined'&nbsp;&amp;&amp;&nbsp;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elem.attributes['data-correct'].value&nbsp;==='true'){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msg&nbsp;=&nbsp;'Answer&nbsp;is&nbsp;correct!';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elem.className&nbsp;+=&nbsp;'&nbsp;btn-success';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app.notify({type:'answer_correct',data:{points:10}});
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;msg&nbsp;=&nbsp;'Answer&nbsp;is&nbsp;incorrect!';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elem.className&nbsp;+=&nbsp;'&nbsp;btn-danger';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//wait&nbsp;for&nbsp;a&nbsp;few&nbsp;seconds&nbsp;before&nbsp;displaying&nbsp;the&nbsp;new&nbsp;question
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;setTimeout(function(){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app.notify({type:'display_question'});
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;},3000);
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;this.init=&nbsp;function(){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app.notify({type:'module_ready',data:{module:'answers'}});
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;this.functions={
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;attach_answer_hook:&nbsp;function(event){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;element&nbsp;=&nbsp;event.data.element;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for(var&nbsp;i=0;i&lt;element.children.length;i++){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;child&nbsp;=&nbsp;element.children[i];
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if(child.tagName.toLowerCase()&nbsp;==&nbsp;'button'){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;child.addEventListener('click',handlers.answer_click);
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;}
+ };
+</pre><button type="button" class="prev-step btn btn-primary">Previous step</button>
+
+				<button type="button" class="next-step btn btn-primary">Next step</button>
+			</div>
+			<div class="well" data-step='6'>
+				<div><b>Step 6:</b></div>
+				<div>Module scores couldn't be simplier.</div>
+				<div>We have only one function here, to update the score value.</div>
+				<pre class='prettyprint lang-html'>
+App.modules.scores&nbsp;=&nbsp;function(App){
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;app&nbsp;=&nbsp;App;
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;data={
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;score:0,
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DOMelement:&nbsp;document.getElementById('quiz-score')
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;cache={};
+ &nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;handlers={
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;this.init=&nbsp;function(){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;app.notify({type:'module_ready',&nbsp;data:{module:'scores'}});
+ &nbsp;&nbsp;&nbsp;&nbsp;};
+ &nbsp;&nbsp;&nbsp;&nbsp;this.functions&nbsp;=&nbsp;{
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;answer_correct:function(event){
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var&nbsp;points&nbsp;=&nbsp;event.data.points;
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;data.DOMelement.innerHTML&nbsp;=&nbsp;points&nbsp;+&nbsp;'&nbsp;points';
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
+ &nbsp;&nbsp;&nbsp;&nbsp;}
+ };
+</pre><button type="button" class="prev-step btn btn-primary">Previous step</button>
+
+				<button type="button" class="next-step btn btn-primary">Next step</button>
+			</div>
+			<div class="well" data-step='7'>
+				<div><b>Step 7:</b></div>
+				<div>Lets take a look how it works.</div>
+				<div class="well" id='quiz'>
+					<div id='quiz-score'>0 points</div>
+					<div id='quiz-question'></div>
+				</div>
+<button type="button" class="prev-step btn btn-primary">Previous step</button>
+<button type="button" class="display-all-steps btn btn-primary">Display all steps</button>
+<button type="button" id='start-quiz' class="btn btn-primary">Start quiz</button>				
+			</div>
+		</div>
+		<section hidden id='templates'>
+			<div id='question-template'>
+			 <div class='question'>
+			   <div class='question-text'>__question_text__</div>
+			   <hr />
+			   <button class='answer btn btn-default' data-correct='true'>__answer1__</button>
+			   <button class='answer btn btn-default'>__answer2__</button>
+			   <button class='answer btn btn-default'>__answer3__</button>
+			   <button class='answer btn btn-default'>__answer4__</button>
+			  </div>
+			 </div>
+		</section>
+		<section id="scripts">
+			<script type="text/javascript" src="js/app.js"></script>
+			<script type="text/javascript" src="js/modules/questions.js"></script>
+			<script type="text/javascript" src="js/modules/answers.js"></script>
+			<script type="text/javascript" src="js/modules/scores.js"></script>
+			<script type="text/javascript" src="js/modules/steps.js"></script>
+			
+			<script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+			<script type="text/javascript">
+			var app = {};
+				window.onload = function () {
+					app = new App.app();
+					app.register_module('questions');
+					app.register_module('answers');
+					app.register_module('scores');
+					app.register_module('steps');
+					app.init();
+					
+				    app.notify({ type: 'test' });
+				    app.notify({ type: 'addButton', data: 'my-button-2' });
+				    app.notify({ type: 'addButton', data: 'my-button-3' });
+				    app.notify({ type: 'addButton', data: 'my-button-4' });
+				    setTimeout(function(){
+				    	app.notify({type:'removeButton',data:0});
+				    },2000);
+
+				}
+			</script>
+		</section>
+	</body>
 </html>

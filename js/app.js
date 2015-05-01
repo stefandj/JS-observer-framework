@@ -23,9 +23,6 @@ var App = {
                     };
                     return size;
                 };
-                Element.prototype.remove = function () {
-                    this.parentElement.removeChild(this);
-                };
                 NodeList.prototype.remove = HTMLCollection.prototype.remove = function () {
                     for (var i = 0, len = this.length; i < len; i++) {
                         if (this[i] && this[i].parentElement) {
@@ -41,7 +38,7 @@ var App = {
                 if (config.ready === false) {
                     if (config.debug == true) {
                         for (var key in modules) {
-                            if (typeof (data.ready_modules[key]) == 'undefined' || data.ready_modules[key] == false) {
+                            if (typeof (local_data.ready_modules[key]) == 'undefined' || local_data.ready_modules[key] == false) {
                                 console.log(key + ' module not ready');
                             };
                         };
@@ -75,7 +72,7 @@ var App = {
                     element.appendChild(clone);
                 };
                 //change inner html if element has no children
-                if (template.childElementCount == 0) {
+                if (template.childElementCount == 0 && template.innerText.length>0 && helpers.element_supports_attribute(template.tagName,'innerText')) {
                     var innerText = template.innerText;
                     for (var key in object) {
                         innerText = helpers.replace_all(innerText,
@@ -113,6 +110,14 @@ var App = {
                     if (status == false) return status;
                 };
                 return status;
+            },
+            element_supports_attribute: function(element, attribute) {
+                var test = document.createElement(element);
+                if (attribute in test) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         };
 
@@ -134,13 +139,17 @@ var App = {
         };
         this.notify = function (event) {
             if (typeof (event) == 'undefined' || typeof (event.type) == 'undefined') {
-                helpers.error('Error. App.notify can\'t proccess this request.');
+                helpers.error('Error: App.notify can\'t proccess this request.');
             };
             if (event.type == 'module_ready') {
-                if (typeof (event.data) == 'undefined') {
-                    helpers.error('Error. App.notify can\'t proccess this request.');
+                if (typeof (event.data) == 'undefined' || 
+                    typeof (event.data.module) =='undefined') {
+                    helpers.error('Error: Can\'t enable module.');
                 };
-                local_data.ready_modules[event.data] = 'ready';
+                if(typeof(modules[event.data.module]) == undefined){
+                    helpers.error('Error: Module '+ event.data.module + ' not registered with this app.');
+                }
+                local_data.ready_modules[event.data.module] = 'ready';
                 if (Object.size(local_data.ready_modules) == Object.size(modules)) {
                     config.ready = true;
                     this.log('app ready');
@@ -167,7 +176,7 @@ var App = {
                 return;
             }
             if(typeof(App.modules[event]) == 'undefined'){
-            	helpers.error("Error: Module not found.");
+            	helpers.error("Error: Module " + event + " not found.");
             	return;
             };
             var module = new App.modules[event](this);
@@ -191,7 +200,7 @@ var App = {
                 helpers.error("Error: unable to initialize repeater. Check your parameters.");
             };
             if (document.getElementById(event.template) == null)
-                helpers.error("Error: template not found.");
+                helpers.error("Error: template " + event.template + " not found.");
             var data = {
                 template: document.getElementById(event.template).children[0],
                 parent: document.getElementById(event.parent),
@@ -200,16 +209,17 @@ var App = {
                 repeater_element_id: 0
             };
             if (data.template == null) {
-                helpers.error("Error: template not found.");
+                helpers.error("Error: template " + event.template + " not found.");
             };
             if (typeof (data.template) == 'undefined' || data.template.parentNode.childElementCount != 1) {
                 helpers.error("Error: template doesn't contain only one child.");
             };
             if (data.parent == null) {
-                helpers.error("Error: parent not found.");
+                helpers.error("Error: parent " + event.parent + " not found.");
             };
 
-            this.addData = function (new_data, retElem) {
+            this.addData = function (new_data, do_not_append) {
+                do_not_append = do_not_append || false;
                 helpers.check();
                 if (typeof (new_data) != 'object') {
                     helpers.error("Error: parameter is not an object.")
@@ -224,10 +234,13 @@ var App = {
                 new_data['data-app'] = config.name;
                 var element = helpers.repeater_create_object(data.template, new_data);
                 data.elements.push(element);
-                if (retElem !== true)
+                if(do_not_append === true){
+
+                }else{
                     data.parent.appendChild(element);
-                else
-                    return element;
+                }
+                    
+                return element;
             };
             this.removeData = function (elm) {
                 helpers.check();
